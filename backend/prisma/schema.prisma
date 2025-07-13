@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  children         Student[]        @relation("ParentChildren")
+  gradesGiven      Grade[]          @relation("TeacherGrades")
+  behaviorReports  BehaviorReport[] @relation("TeacherReports")
+  eventsCreated    Event[]          @relation("EventCreator")
+
+  @@map("users")
+}
+
+model Student {
+  id       String @id @default(cuid())
+  name     String
+  grade    String
+  parentId String
+
+  // Relations
+  parent          User             @relation("ParentChildren", fields: [parentId], references: [id])
+  grades          Grade[]
+  behaviorReports BehaviorReport[]
+
+  @@map("students")
+}
+
+model Grade {
+  id        String   @id @default(cuid())
+  subject   String
+  score     Float
+  maxScore  Float
+  studentId String
+  teacherId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id])
+  teacher User    @relation("TeacherGrades", fields: [teacherId], references: [id])
+
+  @@map("grades")
+}
+
+model BehaviorReport {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  type        BehaviorType
+  studentId   String
+  teacherId   String
+  createdAt   DateTime     @default(now())
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id])
+  teacher User    @relation("TeacherReports", fields: [teacherId], references: [id])
+
+  @@map("behavior_reports")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  date        DateTime
+  createdBy   String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  creator User @relation("EventCreator", fields: [createdBy], references: [id])
+
+  @@map("events")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  PARENT
+}
+
+enum BehaviorType {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
