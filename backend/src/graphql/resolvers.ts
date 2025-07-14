@@ -265,5 +265,47 @@ export const resolvers = {
         include: { creator: true },
       })
     },
+
+    // Admin creates a teacher
+    createTeacher: async (_: any, { email, password, name }: any, context: Context) => {
+      if (!context.user) throw new Error("Not authenticated")
+      if (context.user.role !== "ADMIN") throw new Error("Not authorized")
+
+      const existingUser = await context.prisma.user.findUnique({ where: { email } })
+      if (existingUser) throw new Error("User already exists")
+
+      const hashedPassword = await bcrypt.hash(password, 12)
+      const user = await context.prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          role: "TEACHER",
+        },
+      })
+      const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" })
+      return { token, user }
+    },
+
+    // Admin creates a parent
+    createParent: async (_: any, { email, password, name }: any, context: Context) => {
+      if (!context.user) throw new Error("Not authenticated")
+      if (context.user.role !== "ADMIN") throw new Error("Not authorized")
+
+      const existingUser = await context.prisma.user.findUnique({ where: { email } })
+      if (existingUser) throw new Error("User already exists")
+
+      const hashedPassword = await bcrypt.hash(password, 12)
+      const user = await context.prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          role: "PARENT",
+        },
+      })
+      const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" })
+      return { token, user }
+    },
   },
 }
