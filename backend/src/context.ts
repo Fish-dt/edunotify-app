@@ -1,3 +1,4 @@
+console.log("JWT_SECRET in use:", process.env.JWT_SECRET);
 import { PrismaClient } from "@prisma/client"
 import jwt from "jsonwebtoken"
 

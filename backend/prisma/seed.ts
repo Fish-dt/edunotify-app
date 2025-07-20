@@ -6,33 +6,39 @@ const prisma = new PrismaClient()
 async function main() {
   // Create admin user
   const adminPassword = await bcrypt.hash("admin123", 12)
-  const admin = await prisma.user.create({
-    data: {
+  const admin = await prisma.user.upsert({
+    where: { email: "admin@edunotify.com" },
+    update: {},
+    create: {
       email: "admin@edunotify.com",
       password: adminPassword,
-      name: "Admin User",
+      name: "Admin",
       role: "ADMIN",
     },
   })
 
   // Create teacher user
   const teacherPassword = await bcrypt.hash("teacher123", 12)
-  const teacher = await prisma.user.create({
-    data: {
+  const teacher = await prisma.user.upsert({
+    where: { email: "teacher@edunotify.com" },
+    update: {},
+    create: {
       email: "teacher@edunotify.com",
       password: teacherPassword,
-      name: "Almaz Tadesse",
+      name: "Teacher",
       role: "TEACHER",
     },
   })
 
   // Create parent user
   const parentPassword = await bcrypt.hash("parent123", 12)
-  const parent = await prisma.user.create({
-    data: {
+  const parent = await prisma.user.upsert({
+    where: { email: "parent@edunotify.com" },
+    update: {},
+    create: {
       email: "parent@edunotify.com",
       password: parentPassword,
-      name: "Kebede Alemu",
+      name: "Parent",
       role: "PARENT",
     },
   })
