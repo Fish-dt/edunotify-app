@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  name              String
+  role              Role
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   // Relations
-  children         Student[]        @relation("ParentChildren")
-  gradesGiven      Grade[]          @relation("TeacherGrades")
-  behaviorReports  BehaviorReport[] @relation("TeacherReports")
-  eventsCreated    Event[]          @relation("EventCreator")
+  children            Student[]        @relation("ParentChildren")
+  gradesGiven         Grade[]          @relation("TeacherGrades")
+  behaviorReports     BehaviorReport[] @relation("TeacherReports")
+  eventsCreated       Event[]          @relation("EventCreator")
+  coursesTeaching     Course[]         @relation("TeacherCourses")
 
   @@map("users")
 }
@@ -30,9 +31,11 @@ model Student {
   name     String
   grade    String
   parentId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  parent          User             @relation("ParentChildren", fields: [parentId], references: [id])
+  parent          User             @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
   grades          Grade[]
   behaviorReports BehaviorReport[]
 
@@ -47,10 +50,11 @@ model Grade {
   studentId String
   teacherId String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  student Student @relation(fields: [studentId], references: [id])
-  teacher User    @relation("TeacherGrades", fields: [teacherId], references: [id])
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher User    @relation("TeacherGrades", fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@map("grades")
 }
@@ -63,10 +67,11 @@ model BehaviorReport {
   studentId   String
   teacherId   String
   createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   // Relations
-  student Student @relation(fields: [studentId], references: [id])
-  teacher User    @relation("TeacherReports", fields: [teacherId], references: [id])
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher User    @relation("TeacherReports", fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@map("behavior_reports")
 }
@@ -78,11 +83,25 @@ model Event {
   date        DateTime
   createdBy   String
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  creator User @relation("EventCreator", fields: [createdBy], references: [id])
+  creator User @relation("EventCreator", fields: [createdBy], references: [id], onDelete: Cascade)
 
   @@map("events")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  description String
+  teacherId   String
+  teacher     User     @relation("TeacherCourses", fields: [teacherId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("courses")
 }
 
 enum Role {
