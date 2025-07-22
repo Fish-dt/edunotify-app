@@ -99,9 +99,5 @@ export const typeDefs = `#graphql
     createBehaviorReport(title: String!, description: String!, type: BehaviorType!, studentId: String!): BehaviorReport!
     
     createEvent(title: String!, description: String!, date: String!): Event!
-
-    # New mutations for admin to create teacher and parent
-    createTeacher(email: String!, password: String!, name: String!): AuthPayload!
-    createParent(email: String!, password: String!, name: String!): AuthPayload!
   }
 `

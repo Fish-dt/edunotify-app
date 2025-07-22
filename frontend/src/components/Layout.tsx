@@ -4,7 +4,7 @@ import type React from "react"
 import { Link, useRouter } from "@tanstack/react-router"
 import { useAuthStore } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
-import { LogOut, User, BookOpen, Calendar, Users } from "lucide-react"
+import { LogOut, User, BookOpen, Calendar, Users, TrendingUp, AlertCircle, Star } from "lucide-react"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -26,6 +26,9 @@ export function Layout({ children }: LayoutProps) {
   const navigationItems = [
     { to: "/dashboard", label: "Dashboard", icon: BookOpen },
     { to: "/events", label: "Events", icon: Calendar },
+    { to: "/grades", label: "Grades", icon: TrendingUp },
+    { to: "/behavior", label: "Behavior", icon: AlertCircle },
+    ...(user.role === "PARENT" ? [{ to: "/learning-resources", label: "Resources", icon: Star }] : []),
     ...(user.role === "ADMIN" || user.role === "TEACHER" ? [{ to: "/students", label: "Students", icon: Users }] : []),
   ]
 

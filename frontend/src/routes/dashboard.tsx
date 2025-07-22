@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { createFileRoute } from "@tanstack/react-router"
-import { useQuery, gql, useMutation } from "@apollo/client"
+import { useQuery, gql } from "@apollo/client"
 import { useAuthStore } from "@/lib/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BookOpen, Users, Calendar, TrendingUp } from "lucide-react"
-import React from "react"
 
 const GET_DASHBOARD_DATA = gql`
   query GetDashboardData {
@@ -26,29 +25,9 @@ const GET_DASHBOARD_DATA = gql`
   }
 `
 
-const CREATE_TEACHER = gql`
-  mutation CreateTeacher($email: String!, $password: String!, $name: String!) {
-    createTeacher(email: $email, password: $password, name: $name) {
-      user { id email name role }
-    }
-  }
-`
-const CREATE_PARENT = gql`
-  mutation CreateParent($email: String!, $password: String!, $name: String!) {
-    createParent(email: $email, password: $password, name: $name) {
-      user { id email name role }
-    }
-  }
-`
-
 function Dashboard() {
   const { user } = useAuthStore()
   const { data, loading, error } = useQuery(GET_DASHBOARD_DATA)
-  const [teacherForm, setTeacherForm] = React.useState({ email: "", password: "", name: "" })
-  const [parentForm, setParentForm] = React.useState({ email: "", password: "", name: "" })
-  const [createTeacher, { loading: loadingTeacher, error: errorTeacher }] = useMutation(CREATE_TEACHER)
-  const [createParent, { loading: loadingParent, error: errorParent }] = useMutation(CREATE_PARENT)
-  const [successMsg, setSuccessMsg] = React.useState("")
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
@@ -125,110 +104,6 @@ function Dashboard() {
           </CardContent>
         </Card>
       )}
-
-      {user?.role === "ADMIN" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Create Teacher Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Teacher</CardTitle>
-              <CardDescription>Add a new teacher account</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault()
-                  setSuccessMsg("")
-                  try {
-                    await createTeacher({ variables: teacherForm })
-                    setSuccessMsg("Teacher created successfully!")
-                    setTeacherForm({ email: "", password: "", name: "" })
-                  } catch {}
-                }}
-                className="space-y-2"
-              >
-                <input
-                  className="border p-2 w-full"
-                  type="email"
-                  placeholder="Email"
-                  value={teacherForm.email}
-                  onChange={e => setTeacherForm(f => ({ ...f, email: e.target.value }))}
-                  required
-                />
-                <input
-                  className="border p-2 w-full"
-                  type="text"
-                  placeholder="Name"
-                  value={teacherForm.name}
-                  onChange={e => setTeacherForm(f => ({ ...f, name: e.target.value }))}
-                  required
-                />
-                <input
-                  className="border p-2 w-full"
-                  type="password"
-                  placeholder="Password"
-                  value={teacherForm.password}
-                  onChange={e => setTeacherForm(f => ({ ...f, password: e.target.value }))}
-                  required
-                />
-                <Button type="submit" disabled={loadingTeacher}>Create Teacher</Button>
-                {errorTeacher && <div className="text-red-500 text-sm">{errorTeacher.message}</div>}
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Create Parent Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Parent</CardTitle>
-              <CardDescription>Add a new parent account</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault()
-                  setSuccessMsg("")
-                  try {
-                    await createParent({ variables: parentForm })
-                    setSuccessMsg("Parent created successfully!")
-                    setParentForm({ email: "", password: "", name: "" })
-                  } catch {}
-                }}
-                className="space-y-2"
-              >
-                <input
-                  className="border p-2 w-full"
-                  type="email"
-                  placeholder="Email"
-                  value={parentForm.email}
-                  onChange={e => setParentForm(f => ({ ...f, email: e.target.value }))}
-                  required
-                />
-                <input
-                  className="border p-2 w-full"
-                  type="text"
-                  placeholder="Name"
-                  value={parentForm.name}
-                  onChange={e => setParentForm(f => ({ ...f, name: e.target.value }))}
-                  required
-                />
-                <input
-                  className="border p-2 w-full"
-                  type="password"
-                  placeholder="Password"
-                  value={parentForm.password}
-                  onChange={e => setParentForm(f => ({ ...f, password: e.target.value }))}
-                  required
-                />
-                <Button type="submit" disabled={loadingParent}>Create Parent</Button>
-                {errorParent && <div className="text-red-500 text-sm">{errorParent.message}</div>}
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {successMsg && <div className="text-green-600 font-medium">{successMsg}</div>}
 
       <Card>
         <CardHeader>
