@@ -1,7 +1,7 @@
 "use client"
 
-import  from "../frontend/src/components/ui/button"
+import { Button } from "@/components/ui/button"
 
 export default function SyntheticV0PageForDeployment() {
-  return < />
+  return <Button>Click me</Button>
 }
