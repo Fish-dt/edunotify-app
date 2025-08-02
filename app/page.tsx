@@ -2,6 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 
-export default function SyntheticV0PageForDeployment() {
+export default function EdunotifyPage() {
   return <Button>Click me</Button>
 }
